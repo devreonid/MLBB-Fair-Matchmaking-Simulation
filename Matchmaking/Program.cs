@@ -1,62 +1,13 @@
-﻿using System;
+﻿using System.Threading;
 using System.Collections.Generic;
+using Matchmaking;
 
 namespace Matchmaking_Scheme;
 
 public static class Program
 {
-    class Player
-    {
-        public int identificator;
-        public int theHighest;
-        public int order;
-
-        public Player()
-        {
-            Highest();
-        }
-
-        static Random random = new Random();
-
-        //Maksimal match terakhir yang dapat direkam paling banyak adalah 50
-        int mid = random.Next(1, 50); // Acak antara 1 sampai 50
-        int exp = random.Next(1, 50); // Acak antara 1 sampai 50
-        int roam = random.Next(1, 50); // Acak antara 1 sampai 50
-        int jungle = random.Next(1, 50); // Acak antara 1 sampai 50
-        int gold = random.Next(1, 50); // Acak antara 1 sampai 50
-
-        // Midlane = 1
-        // Explane = 2
-        // Roam = 3
-        // Jungle = 4
-        // Goldlane = 5 
-
-        public int Highest()
-        {
-            theHighest = (((mid > exp) ? mid : exp) > ((roam > jungle) ? roam : jungle)) ? ((mid > exp) ? mid : exp) : ((roam > jungle) ? roam : jungle);
-            theHighest = (theHighest > gold) ? theHighest : gold;
-
-            //Console.WriteLine(theHighest); //DEBUG
-
-            if (theHighest == mid)
-                return identificator = 1 ;
-
-            else if (theHighest == exp)
-                return identificator = 2;
-
-            else if (theHighest == roam)
-                return identificator = 3;
-
-            else if (theHighest == jungle)
-                return identificator = 4;
-
-            else if (theHighest == gold)
-                return identificator = 5;
-            
-            return theHighest;
-        }
-    }
-
+    private static Random random = new Random();
+    
     static void Fetching(List<Player> listObject)
     {
         Dictionary<int, List<Player>> angkaSamaMap = new Dictionary<int, List<Player>>();
@@ -84,7 +35,7 @@ public static class Program
         // Memilih satu wakil dari setiap objek dengan angka identificator yang sama secara acak
         foreach (var pair in angkaSamaMap)
         {
-            int indexWakil = new Random().Next(pair.Value.Count); // Misal muncul 6 kali berarti 1 sampai 6
+            int indexWakil = random.Next(pair.Value.Count); // Misal muncul 6 kali berarti 1 sampai 6
             Player objekWakil = pair.Value[indexWakil]; // pair.Value[hasilRandom dari 1 sampai 6]
             listObjekWakil.Add(objekWakil);
 
@@ -150,32 +101,32 @@ public static class Program
         foreach (var player in listObjekWakil)
         {
             // Mengakses properti identificator dari objek Player
-            Console.WriteLine("Player - " + player.order + " (Slot " + slotCounter + ")");
-            Console.WriteLine("Debug Player Identificator: " + player.identificator);
+            Console.WriteLine("Player - {0} (Slot {1})", player.order, slotCounter);
+            Console.WriteLine("Debug Player Identificator: {0}", player.identificator);
 
             if (player.identificator == 1)
             {
-                Console.WriteLine("Midlaner " + player.theHighest + " Match");
+                Console.WriteLine("Midlaner {0} Match", player.theHighest);
             }
 
             else if (player.identificator == 2)
             {
-                Console.WriteLine("Explaner " + player.theHighest + " Match");
+                Console.WriteLine("Explaner {0} Match", player.theHighest);
             }
 
             else if (player.identificator == 3)
             {
-                Console.WriteLine("Roamer " + player.theHighest + " Match");
+                Console.WriteLine("Roamer {0} Match", player.theHighest);
             }
 
             else if (player.identificator == 4)
             {
-                Console.WriteLine("Jungler " + player.theHighest + " Match");
+                Console.WriteLine("Jungler {0} Match", player.theHighest);
             }
 
             else if (player.identificator == 5)
             {
-                Console.WriteLine("Goldlaner " + player.theHighest + " Match");
+                Console.WriteLine("Goldlaner {0} Match", player.theHighest);
             }
 
 
@@ -189,17 +140,45 @@ public static class Program
 
     static void Start()
     {
+        Console.WriteLine("Start Matchmaking?");
+        Console.WriteLine("Press enter to start.");
+
+        Console.ReadLine();
+        Console.Clear();
+
+        Console.WriteLine("Searching for online players...");
+        Console.WriteLine("Please Wait.");
+
         // Membuat list untuk object Player
         List<Player> objects = new List<Player>();
+        int ready = random.Next(15, 30);
+        int sleep;
+        if (ready < 20)
+        {
+            sleep = random.Next(4000, 5000);
+        }
+        else
+        {
+            sleep = random.Next(2000, 4000);
+        }
 
-        Random random = new Random();
         // Mengisi list Player dengan random. Minimal 15 dan Maksimal 20 objek.
-        for (int i = 0; i < random.Next(15, 30); i++)
+        for (int i = 0; i < ready; i++)
         {
             //Console.WriteLine($"Player {i + 1} :"); //DEBUG
             objects.Add(new Player());
             objects[i].order = i + 1; //Agar bisa disusun dan diketahui urutan playernya
         }
+
+        Thread.Sleep(sleep);
+
+        Console.Clear();
+        Console.WriteLine("Found {0} players ready for matchmaking", ready);
+        Console.WriteLine("Fetching players data...", ready);
+
+        Thread.Sleep(sleep);
+
+        Console.Clear();
 
         Fetching(objects);
 
@@ -211,7 +190,7 @@ public static class Program
         string input;
         do
         {
-            Console.WriteLine("Ingin mengulang matchmaking? [y] / [n]");
+            Console.WriteLine("Restart matchmaking? [y] / [n]");
             input = Console.ReadLine();
             input.ToLower();
 
@@ -232,24 +211,6 @@ public static class Program
 
     public static void Main()
     {
-        /*
-        //15 Random Player Sample
-        Player playerOne = new Player();
-        Player playerTwo = new Player();
-        Player playerThree = new Player();
-        Player playerFour = new Player();
-        Player playerFive = new Player();
-        Player playerSix = new Player();
-        Player playerSeven = new Player();
-        Player playerEight = new Player();
-        Player playerNine = new Player();
-        Player playerTen = new Player();
-        Player playerEleven = new Player();
-        Player playerTwelve = new Player();
-        Player playerThirteen = new Player();
-        Player playerFourteen = new Player();
-        Player playerFifteen = new Player();
-        */
 
         Console.Title = "Matchmaking Simulation";
         Start();
